@@ -210,7 +210,7 @@ func setByForm(value reflect.Value, field reflect.StructField, form map[string][
 func trySetCustom(val string, value reflect.Value) (isSet bool, err error) {
 	switch v := value.Addr().Interface().(type) {
 	case encoding.TextUnmarshaler:
-		if value.Kind() != reflect.Struct {
+		if value.Type().String() != "time.Time" {
 			return true, v.UnmarshalText([]byte(val))
 		}
 	case BindUnmarshaler:
