@@ -46,8 +46,8 @@ type BindingUri interface {
 	BindUri(map[string][]string, any) error
 }
 
-type BindUnmarshaler interface {
-	UnmarshalParam(param string) error
+type ParamUnmarshaler interface {
+	UnmarshalParam(key, val string) error
 }
 
 // StructValidator is the minimal interface which needs to be implemented in

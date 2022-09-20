@@ -166,7 +166,20 @@ func tryToSetValue(value reflect.Value, field reflect.StructField, setter setter
 }
 
 func setByForm(value reflect.Value, field reflect.StructField, form map[string][]string, tagValue string, opt setOptions) (isSet bool, err error) {
+	key := tagValue
 	vs, ok := form[tagValue]
+	if !ok {
+		prefix := tagValue + "."
+		for n, v := range form {
+			if strings.HasPrefix(n, prefix) {
+				ok = true
+				key = n
+				vs = v
+				break
+			}
+		}
+	}
+
 	if !ok && !opt.isDefaultExists {
 		return false, nil
 	}
@@ -176,7 +189,7 @@ func setByForm(value reflect.Value, field reflect.StructField, form map[string][
 		if !ok {
 			vs = []string{opt.defaultValue}
 		}
-		if ok, err := trySetCustom(vs[0], value); ok || err != nil {
+		if ok, err := trySetCustom(vs[0], key, value); ok || err != nil {
 			return ok, err
 		}
 		return true, setSlice(vs, value, field)
@@ -184,7 +197,7 @@ func setByForm(value reflect.Value, field reflect.StructField, form map[string][
 		if !ok {
 			vs = []string{opt.defaultValue}
 		}
-		if ok, err := trySetCustom(vs[0], value); ok || err != nil {
+		if ok, err := trySetCustom(vs[0], key, value); ok || err != nil {
 			return ok, err
 		}
 		if len(vs) != value.Len() {
@@ -200,21 +213,21 @@ func setByForm(value reflect.Value, field reflect.StructField, form map[string][
 		if len(vs) > 0 {
 			val = vs[0]
 		}
-		if ok, err := trySetCustom(val, value); ok || err != nil {
+		if ok, err := trySetCustom(val, key, value); ok || err != nil {
 			return ok, err
 		}
 		return true, setWithProperType(val, value, field)
 	}
 }
 
-func trySetCustom(val string, value reflect.Value) (isSet bool, err error) {
+func trySetCustom(val, key string, value reflect.Value) (isSet bool, err error) {
 	switch v := value.Addr().Interface().(type) {
 	case encoding.TextUnmarshaler:
 		if value.Type().String() != "time.Time" {
 			return true, v.UnmarshalText([]byte(val))
 		}
-	case BindUnmarshaler:
-		return true, v.UnmarshalParam(val)
+	case ParamUnmarshaler:
+		return true, v.UnmarshalParam(key, val)
 	}
 
 	return false, nil
