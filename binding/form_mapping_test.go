@@ -117,7 +117,7 @@ func TestMappingPrivateField(t *testing.T) {
 	}
 	err := mappingByPtr(&s, formSource{"field": {"6"}}, "form")
 	assert.NoError(t, err)
-	assert.Equal(t, int(0), s.f)
+	assert.Equal(t, 0, s.f)
 }
 
 func TestMappingUnknownFieldType(t *testing.T) {
@@ -136,7 +136,7 @@ func TestMappingURI(t *testing.T) {
 	}
 	err := mapURI(&s, map[string][]string{"field": {"6"}})
 	assert.NoError(t, err)
-	assert.Equal(t, int(6), s.F)
+	assert.Equal(t, 6, s.F)
 }
 
 func TestMappingForm(t *testing.T) {
@@ -145,7 +145,7 @@ func TestMappingForm(t *testing.T) {
 	}
 	err := mapForm(&s, map[string][]string{"field": {"6"}})
 	assert.NoError(t, err)
-	assert.Equal(t, int(6), s.F)
+	assert.Equal(t, 6, s.F)
 }
 
 func TestMapFormWithTag(t *testing.T) {
@@ -154,7 +154,7 @@ func TestMapFormWithTag(t *testing.T) {
 	}
 	err := MapFormWithTag(&s, map[string][]string{"field": {"6"}}, "externalTag")
 	assert.NoError(t, err)
-	assert.Equal(t, int(6), s.F)
+	assert.Equal(t, 6, s.F)
 }
 
 func TestMappingTime(t *testing.T) {
